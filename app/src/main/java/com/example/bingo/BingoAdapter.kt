@@ -2,6 +2,7 @@ package com.example.bingo
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -16,14 +17,19 @@ class BingoAdapter(private val clickListener: GridListener) : ListAdapter<Bingo,
         RecyclerView.ViewHolder(binding.root) {
         fun bind(clickListener: GridListener, bingo: Bingo) {
             binding.numberMaterialButton.text = bingo.number
-            binding.numberMaterialButton.isChecked = bingo.isSelected
+            binding.numberMaterialButton.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
             binding.numberMaterialButton.setOnClickListener {
-                clickListener.onClick()
+                // change button's color
+                if (ColorStateList.valueOf(Color.GRAY) == it.backgroundTintList) {
+                    binding.numberMaterialButton.backgroundTintList =
+                        ColorStateList.valueOf(Color.RED)
+                } else {
+                    binding.numberMaterialButton.backgroundTintList =
+                        ColorStateList.valueOf(Color.GRAY)
+                }
+                // bingo game logic
+                clickListener.onClick(bingo)
             }
-            if (bingo.isSelected)
-                binding.numberMaterialButton.setBackgroundColor(Color.RED)
-            else
-                binding.numberMaterialButton.setBackgroundColor(Color.GRAY)
         }
     }
 
@@ -52,6 +58,6 @@ class BingoAdapter(private val clickListener: GridListener) : ListAdapter<Bingo,
     }
 }
 
-class GridListener(val clickListener: () -> Unit) {
-    fun onClick() = clickListener()
+class GridListener(val clickListener: (Bingo) -> Unit) {
+    fun onClick(bingo: Bingo) = clickListener(bingo)
 }

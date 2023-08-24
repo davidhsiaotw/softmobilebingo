@@ -1,22 +1,25 @@
 package com.example.bingo
 
-import android.app.AlertDialog
-import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var bingoViewModel: BingoViewModel
-    private lateinit var bingoRecyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val bingoViewModel = BingoViewModel()
+        val bingoRecyclerView = findViewById<RecyclerView>(R.id.grids_recylerview)
+
+//        Log.d("MainActivity", "${bingoViewModel.bingo.value?.size}")
         val startButton = findViewById<Button>(R.id.start_button)
         startButton.setOnClickListener {
             bingoViewModel.startBingo()
@@ -32,7 +35,9 @@ class MainActivity : AppCompatActivity() {
 
         // create bingo adapter
         bingoRecyclerView.adapter = BingoAdapter(GridListener {
+            it.isSelected = !it.isSelected
             if (bingoViewModel.checkBingo()) {
+                Toast.makeText(this, "BINGO!!", Toast.LENGTH_SHORT).show()
                 // show bingo dialog
                 val dialog = MaterialAlertDialogBuilder(this)
             }
