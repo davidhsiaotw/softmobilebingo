@@ -1,18 +1,30 @@
 package com.example.bingo
 
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bingo.databinding.ButtonBinding
 
-class BingoAdapter : ListAdapter<Bingo, BingoAdapter.BingoViewHolder>(DiffCallback) {
+class BingoAdapter(private val clickListener: GridListener) : ListAdapter<Bingo, BingoAdapter
+.BingoViewHolder>(DiffCallback) {
 
     class BingoViewHolder(private var binding: ButtonBinding) :
         RecyclerView.ViewHolder(binding.root) {
-            fun bind(bingo: Bingo)  {
-                binding.numberMaterialButton.text = bingo.number
+        fun bind(clickListener: GridListener, bingo: Bingo) {
+            binding.numberMaterialButton.text = bingo.number
+            binding.numberMaterialButton.isChecked = bingo.isSelected
+            binding.numberMaterialButton.setOnClickListener {
+                clickListener.onClick()
             }
+            if (bingo.isSelected)
+                binding.numberMaterialButton.setBackgroundColor(Color.RED)
+            else
+                binding.numberMaterialButton.setBackgroundColor(Color.GRAY)
+        }
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<Bingo>() {
@@ -30,11 +42,16 @@ class BingoAdapter : ListAdapter<Bingo, BingoAdapter.BingoViewHolder>(DiffCallba
         parent: ViewGroup,
         viewType: Int
     ): BingoAdapter.BingoViewHolder {
-        TODO("Not yet implemented")
+        val viewHolder = BingoViewHolder(ButtonBinding.inflate(LayoutInflater.from(parent.context)))
+        return viewHolder
     }
 
-    override fun onBindViewHolder(holder: BingoAdapter.BingoViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BingoViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(clickListener, item)
     }
+}
+
+class GridListener(val clickListener: () -> Unit) {
+    fun onClick() = clickListener()
 }
