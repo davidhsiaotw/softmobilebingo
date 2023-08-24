@@ -21,7 +21,9 @@ class BingoViewModel : ViewModel() {
     fun startBingo() {
         // randomize nine numbers with 1~25
         _bingo.value = ArrayList()
-        val numbers = (1..9).map { Random.nextInt(1, 26).toString() }
+        // reference: https://stackoverflow.com/a/69076855
+        val numbers =
+            generateSequence { Random.nextInt(1, 26).toString() }.distinct().take(9).toList()
         for (i in numbers.indices) {
             _bingo.value?.add(Bingo(i, numbers[i]))
         }
@@ -34,7 +36,7 @@ class BingoViewModel : ViewModel() {
         answer.forEach {
             var isLine = true
             it.forEach { index ->
-                isLine = isLine && _bingo.value?.get(index-1)?.isSelected == true
+                isLine = isLine && _bingo.value?.get(index - 1)?.isSelected == true
             }
             if (isLine) lines++
             if (lines == 2) return true
